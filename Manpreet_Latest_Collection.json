@@ -1,0 +1,1375 @@
+{
+	"info": {
+		"_postman_id": "8bee0f4e-cdb1-4cfb-ad3f-47615886c818",
+		"name": "Manpreet's Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Auth",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\" : \"admin\",\n    \"password\" : \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/auth",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"auth"
+							]
+						},
+						"description": "In this Post Auth request, different types of Authorization request is available like No Auth, Basic Auth, OAuth 1.0, OAuth 2.0  \n  \nWe are using basic auth for an authorization and creating token with that"
+					},
+					"response": []
+				}
+			],
+			"description": "This Auth folder contains request of Authentication. We cannot access the response data until and unless we are not authorising it using Basic Auth credentials. To Access the information, we need to authorize it with Auth Credentials."
+		},
+		{
+			"name": "Create Booking",
+			"item": [
+				{
+					"name": "Valid Create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"//Set booking ID in environment variable",
+									"pm.test('Set  to environment variable', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set('booking_id', jsonData.bookingid);",
+									"    // console.log(jsonData.bookingid);",
+									"});",
+									"",
+									"let createidSchema = {",
+									"    \"definitions\": {",
+									"        \"GetBookingByIDNumb\": {",
+									"            \"type\": \"object\",",
+									"            \"additionalProperties\": false,",
+									"            \"properties\": {",
+									"                \"firstname\": {",
+									"                    \"type\": \"string\"",
+									"                },",
+									"                \"lastname\": {",
+									"                    \"type\": \"string\"",
+									"                },",
+									"                \"totalprice\": {",
+									"                    \"type\": \"integer\"",
+									"                },",
+									"                \"depositpaid\": {",
+									"                    \"type\": \"boolean\"",
+									"                },",
+									"                \"bookingdates\": {",
+									"                    \"$ref\": \"#/definitions/Bookingdates\"",
+									"                },",
+									"                \"additionalneeds\": {",
+									"                    \"type\": \"string\"",
+									"                }",
+									"            },",
+									"            \"required\": [",
+									"                \"additionalneeds\",",
+									"                \"bookingdates\",",
+									"                \"depositpaid\",",
+									"                \"firstname\",",
+									"                \"lastname\",",
+									"                \"totalprice\"",
+									"            ],",
+									"            \"title\": \"GetBookingByIDNumb\"",
+									"        },",
+									"        \"Bookingdates\": {",
+									"            \"type\": \"object\",",
+									"            \"additionalProperties\": false,",
+									"            \"properties\": {",
+									"                \"checkin\": {",
+									"                    \"type\": \"string\",",
+									"                    \"format\": \"date\"",
+									"                },",
+									"                \"checkout\": {",
+									"                    \"type\": \"string\",",
+									"                    \"format\": \"date\"",
+									"                }",
+									"            },",
+									"            \"required\": [",
+									"                \"checkin\",",
+									"                \"checkout\"",
+									"            ],",
+									"            \"title\": \"Bookingdates\"",
+									"        }",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Validate Json schema for Create ID, Schema is valid \",()=>{",
+									"    pm.response.to.have.jsonSchema(createidSchema)",
+									"})",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstname\" : \"Manpreet\",\n    \"lastname\" : \"Singh\",\n    \"totalprice\" : 111,\n    \"depositpaid\" : true,\n    \"bookingdates\" : {\n        \"checkin\" : \"2018-01-01\",\n        \"checkout\" : \"2019-01-01\"\n    },\n    \"additionalneeds\" : \"Breakfast\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/booking",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"booking"
+							]
+						},
+						"description": "This will create the new booking with the additional details if required"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get Booking",
+			"item": [
+				{
+					"name": "GetAllBookingIds",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"",
+									"var GetBookingSchema ={",
+									"    \"$schema\": \"http://json-schema.org/draft-07/schema\",",
+									"    \"$id\": \"http://localhost:3001/booking\",",
+									"    \"type\": \"array\",",
+									"    \"title\": \"The root schema\",",
+									"    \"description\": \"The root schema comprises the entire JSON document.\",",
+									"    \"default\": [],",
+									"    \"examples\": [",
+									"        [",
+									"            {",
+									"                \"bookingid\": 11",
+									"            },",
+									"            {",
+									"                \"bookingid\": 6",
+									"            }",
+									"        ]",
+									"    ],",
+									"    \"additionalItems\": true,",
+									"    \"items\": {",
+									"        \"$id\": \"#/items\",",
+									"        \"anyOf\": [",
+									"            {",
+									"                \"$id\": \"#/items/anyOf/0\",",
+									"                \"type\": \"object\",",
+									"                \"title\": \"The first anyOf schema\",",
+									"                \"description\": \"An explanation about the purpose of this instance.\",",
+									"                \"default\": {},",
+									"                \"examples\": [",
+									"                    {",
+									"                        \"bookingid\": 11",
+									"                    }",
+									"                ],",
+									"                \"required\": [",
+									"                    \"bookingid\"",
+									"                ],",
+									"                \"properties\": {",
+									"                    \"bookingid\": {",
+									"                        \"$id\": \"#/items/anyOf/0/properties/bookingid\",",
+									"                        \"type\": \"integer\",",
+									"                        \"title\": \"The bookingid schema\",",
+									"                        \"description\": \"An explanation about the purpose of this instance.\",",
+									"                        \"default\": 0,",
+									"                        \"examples\": [",
+									"                            11",
+									"                        ]",
+									"                    }",
+									"                },",
+									"                \"additionalProperties\": true",
+									"            }",
+									"        ]",
+									"    }",
+									"}",
+									"pm.test(\"Validate Json schema for GetBooking, Schema is valid \",()=>{",
+									"    pm.response.to.have.jsonSchema(GetBookingSchema)",
+									"})",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}/booking",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"booking"
+							]
+						},
+						"description": "It will display bookings in ID form"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Booking By Firstname",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"firstname\", \"Manu\");",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var firstnameSchema ={",
+									"    \"$schema\": \"http://json-schema.org/draft-07/schema\",",
+									"    \"$id\": \"http://localhost:3001/booking\",",
+									"    \"type\": \"array\",",
+									"    \"title\": \"The root schema\",",
+									"    \"description\": \"The root schema comprises the entire JSON document.\",",
+									"    \"default\": [],",
+									"    \"examples\": [",
+									"        [",
+									"            {",
+									"                \"bookingid\": 11",
+									"            },",
+									"            {",
+									"                \"bookingid\": 6",
+									"            }",
+									"        ]",
+									"    ],",
+									"    \"additionalItems\": true,",
+									"    \"items\": {",
+									"        \"$id\": \"#/items\",",
+									"        \"anyOf\": [",
+									"            {",
+									"                \"$id\": \"#/items/anyOf/0\",",
+									"                \"type\": \"object\",",
+									"                \"title\": \"The first anyOf schema\",",
+									"                \"description\": \"An explanation about the purpose of this instance.\",",
+									"                \"default\": {},",
+									"                \"examples\": [",
+									"                    {",
+									"                        \"bookingid\": 11",
+									"                    }",
+									"                ],",
+									"                \"required\": [",
+									"                    \"bookingid\"",
+									"                ],",
+									"                \"properties\": {",
+									"                    \"bookingid\": {",
+									"                        \"$id\": \"#/items/anyOf/0/properties/bookingid\",",
+									"                        \"type\": \"integer\",",
+									"                        \"title\": \"The bookingid schema\",",
+									"                        \"description\": \"An explanation about the purpose of this instance.\",",
+									"                        \"default\": 0,",
+									"                        \"examples\": [",
+									"                            11",
+									"                        ]",
+									"                    }",
+									"                },",
+									"                \"additionalProperties\": true",
+									"            }",
+									"        ]",
+									"    }",
+									"}",
+									"pm.test(\"Validate Json schema for Firstname, Schema is valid \",()=>{",
+									"    pm.response.to.have.jsonSchema(firstnameSchema)",
+									"})",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}/booking?firstname={{firstname}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"booking"
+							],
+							"query": [
+								{
+									"key": "firstname",
+									"value": "{{firstname}}"
+								}
+							]
+						},
+						"description": "With this report, we can filter booking using First Name"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Booking By Last Name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"lastname\", \"Singh\");",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var lastnameSchema ={",
+									"    \"$schema\": \"http://json-schema.org/draft-07/schema\",",
+									"    \"$id\": \"http://localhost:3001/booking\",",
+									"    \"type\": \"array\",",
+									"    \"title\": \"The root schema\",",
+									"    \"description\": \"The root schema comprises the entire JSON document.\",",
+									"    \"default\": [],",
+									"    \"examples\": [",
+									"        [",
+									"            {",
+									"                \"bookingid\": 11",
+									"            },",
+									"            {",
+									"                \"bookingid\": 6",
+									"            }",
+									"        ]",
+									"    ],",
+									"    \"additionalItems\": true,",
+									"    \"items\": {",
+									"        \"$id\": \"#/items\",",
+									"        \"anyOf\": [",
+									"            {",
+									"                \"$id\": \"#/items/anyOf/0\",",
+									"                \"type\": \"object\",",
+									"                \"title\": \"The first anyOf schema\",",
+									"                \"description\": \"An explanation about the purpose of this instance.\",",
+									"                \"default\": {},",
+									"                \"examples\": [",
+									"                    {",
+									"                        \"bookingid\": 11",
+									"                    }",
+									"                ],",
+									"                \"required\": [",
+									"                    \"bookingid\"",
+									"                ],",
+									"                \"properties\": {",
+									"                    \"bookingid\": {",
+									"                        \"$id\": \"#/items/anyOf/0/properties/bookingid\",",
+									"                        \"type\": \"integer\",",
+									"                        \"title\": \"The bookingid schema\",",
+									"                        \"description\": \"An explanation about the purpose of this instance.\",",
+									"                        \"default\": 0,",
+									"                        \"examples\": [",
+									"                            11",
+									"                        ]",
+									"                    }",
+									"                },",
+									"                \"additionalProperties\": true",
+									"            }",
+									"        ]",
+									"    }",
+									"}",
+									"pm.test(\"Validate Json schema for Lastname, Schema is valid \",()=>{",
+									"    pm.response.to.have.jsonSchema(lastnameSchema)",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/booking?lastname={{lastname}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"booking"
+							],
+							"query": [
+								{
+									"key": "lastname",
+									"value": "{{lastname}}"
+								}
+							]
+						},
+						"description": "With this report, we can filter booking using Last Name"
+					},
+					"response": []
+				},
+				{
+					"name": "Search By Checkin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"checkin\", \"2018-05-21\");",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var checkinSchema ={",
+									"    \"$schema\": \"http://json-schema.org/draft-07/schema\",",
+									"    \"$id\": \"http://localhost:3001/booking\",",
+									"    \"type\": \"array\",",
+									"    \"title\": \"The root schema\",",
+									"    \"description\": \"The root schema comprises the entire JSON document.\",",
+									"    \"default\": [],",
+									"    \"examples\": [",
+									"        [",
+									"            {",
+									"                \"bookingid\": 11",
+									"            },",
+									"            {",
+									"                \"bookingid\": 6",
+									"            }",
+									"        ]",
+									"    ],",
+									"    \"additionalItems\": true,",
+									"    \"items\": {",
+									"        \"$id\": \"#/items\",",
+									"        \"anyOf\": [",
+									"            {",
+									"                \"$id\": \"#/items/anyOf/0\",",
+									"                \"type\": \"object\",",
+									"                \"title\": \"The first anyOf schema\",",
+									"                \"description\": \"An explanation about the purpose of this instance.\",",
+									"                \"default\": {},",
+									"                \"examples\": [",
+									"                    {",
+									"                        \"bookingid\": 11",
+									"                    }",
+									"                ],",
+									"                \"required\": [",
+									"                    \"bookingid\"",
+									"                ],",
+									"                \"properties\": {",
+									"                    \"bookingid\": {",
+									"                        \"$id\": \"#/items/anyOf/0/properties/bookingid\",",
+									"                        \"type\": \"integer\",",
+									"                        \"title\": \"The bookingid schema\",",
+									"                        \"description\": \"An explanation about the purpose of this instance.\",",
+									"                        \"default\": 0,",
+									"                        \"examples\": [",
+									"                            11",
+									"                        ]",
+									"                    }",
+									"                },",
+									"                \"additionalProperties\": true",
+									"            }",
+									"        ]",
+									"    }",
+									"}",
+									"pm.test(\"Validate Json schema for Checkin, Schema is valid \",()=>{",
+									"    pm.response.to.have.jsonSchema(checkinSchema)",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/booking?checkin={{checkin}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"booking"
+							],
+							"query": [
+								{
+									"key": "checkin",
+									"value": "{{checkin}}"
+								}
+							]
+						},
+						"description": "With this report, we can filter booking using Checkin Date"
+					},
+					"response": []
+				},
+				{
+					"name": "Search By Checkout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"checkout\",\"2019-01-01\");",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var checkoutSchema ={",
+									"    \"$schema\": \"http://json-schema.org/draft-07/schema\",",
+									"    \"$id\": \"http://localhost:3001/booking\",",
+									"    \"type\": \"array\",",
+									"    \"title\": \"The root schema\",",
+									"    \"description\": \"The root schema comprises the entire JSON document.\",",
+									"    \"default\": [],",
+									"    \"examples\": [",
+									"        [",
+									"            {",
+									"                \"bookingid\": 11",
+									"            },",
+									"            {",
+									"                \"bookingid\": 6",
+									"            }",
+									"        ]",
+									"    ],",
+									"    \"additionalItems\": true,",
+									"    \"items\": {",
+									"        \"$id\": \"#/items\",",
+									"        \"anyOf\": [",
+									"            {",
+									"                \"$id\": \"#/items/anyOf/0\",",
+									"                \"type\": \"object\",",
+									"                \"title\": \"The first anyOf schema\",",
+									"                \"description\": \"An explanation about the purpose of this instance.\",",
+									"                \"default\": {},",
+									"                \"examples\": [",
+									"                    {",
+									"                        \"bookingid\": 11",
+									"                    }",
+									"                ],",
+									"                \"required\": [",
+									"                    \"bookingid\"",
+									"                ],",
+									"                \"properties\": {",
+									"                    \"bookingid\": {",
+									"                        \"$id\": \"#/items/anyOf/0/properties/bookingid\",",
+									"                        \"type\": \"integer\",",
+									"                        \"title\": \"The bookingid schema\",",
+									"                        \"description\": \"An explanation about the purpose of this instance.\",",
+									"                        \"default\": 0,",
+									"                        \"examples\": [",
+									"                            11",
+									"                        ]",
+									"                    }",
+									"                },",
+									"                \"additionalProperties\": true",
+									"            }",
+									"        ]",
+									"    }",
+									"}",
+									"pm.test(\"Validate Json schema for Checkout, Schema is valid \",()=>{",
+									"    pm.response.to.have.jsonSchema(checkoutSchema)",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/booking?checkout={{checkout}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"booking"
+							],
+							"query": [
+								{
+									"key": "checkout",
+									"value": "{{checkout}}"
+								}
+							]
+						},
+						"description": "With this report, we can filter booking using Checkout Date"
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Get Booking By ID",
+			"item": [
+				{
+					"name": "Existing ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var existingidSchema = {",
+									"    \"$schema\": \"http://json-schema.org/draft-07/schema\",",
+									"    \"$id\": \"http://localhost:3001\",",
+									"    \"type\": \"object\",",
+									"    \"title\": \"The root schema\",",
+									"    \"description\": \"The root schema comprises the entire JSON document.\",",
+									"    \"default\": {},",
+									"    \"examples\": [",
+									"        {",
+									"            \"firstname\": \"Manpreet\",",
+									"            \"lastname\": \"Singh\",",
+									"            \"totalprice\": 111,",
+									"            \"depositpaid\": true,",
+									"            \"bookingdates\": {",
+									"                \"checkin\": \"2018-01-01\",",
+									"                \"checkout\": \"2019-01-01\"",
+									"            },",
+									"            \"additionalneeds\": \"Breakfast\"",
+									"        }",
+									"    ],",
+									"    \"required\": [",
+									"        \"firstname\",",
+									"        \"lastname\",",
+									"        \"totalprice\",",
+									"        \"depositpaid\",",
+									"        \"bookingdates\",",
+									"        \"additionalneeds\"",
+									"    ],",
+									"    \"properties\": {",
+									"        \"firstname\": {",
+									"            \"$id\": \"#/properties/firstname\",",
+									"            \"type\": \"string\",",
+									"            \"title\": \"The firstname schema\",",
+									"            \"description\": \"An explanation about the purpose of this instance.\",",
+									"            \"default\": \"\",",
+									"            \"examples\": [",
+									"                \"Manpreet\"",
+									"            ]",
+									"        },",
+									"        \"lastname\": {",
+									"            \"$id\": \"#/properties/lastname\",",
+									"            \"type\": \"string\",",
+									"            \"title\": \"The lastname schema\",",
+									"            \"description\": \"An explanation about the purpose of this instance.\",",
+									"            \"default\": \"\",",
+									"            \"examples\": [",
+									"                \"Singh\"",
+									"            ]",
+									"        },",
+									"        \"totalprice\": {",
+									"            \"$id\": \"#/properties/totalprice\",",
+									"            \"type\": \"integer\",",
+									"            \"title\": \"The totalprice schema\",",
+									"            \"description\": \"An explanation about the purpose of this instance.\",",
+									"            \"default\": 0,",
+									"            \"examples\": [",
+									"                111",
+									"            ]",
+									"        },",
+									"        \"depositpaid\": {",
+									"            \"$id\": \"#/properties/depositpaid\",",
+									"            \"type\": \"boolean\",",
+									"            \"title\": \"The depositpaid schema\",",
+									"            \"description\": \"An explanation about the purpose of this instance.\",",
+									"            \"default\": false,",
+									"            \"examples\": [",
+									"                true",
+									"            ]",
+									"        },",
+									"        \"bookingdates\": {",
+									"            \"$id\": \"#/properties/bookingdates\",",
+									"            \"type\": \"object\",",
+									"            \"title\": \"The bookingdates schema\",",
+									"            \"description\": \"An explanation about the purpose of this instance.\",",
+									"            \"default\": {},",
+									"            \"examples\": [",
+									"                {",
+									"                    \"checkin\": \"2018-01-01\",",
+									"                    \"checkout\": \"2019-01-01\"",
+									"                }",
+									"            ],",
+									"            \"required\": [",
+									"                \"checkin\",",
+									"                \"checkout\"",
+									"            ],",
+									"            \"properties\": {",
+									"                \"checkin\": {",
+									"                    \"$id\": \"#/properties/bookingdates/properties/checkin\",",
+									"                    \"type\": \"string\",",
+									"                    \"title\": \"The checkin schema\",",
+									"                    \"description\": \"An explanation about the purpose of this instance.\",",
+									"                    \"default\": \"\",",
+									"                    \"examples\": [",
+									"                        \"2018-01-01\"",
+									"                    ]",
+									"                },",
+									"                \"checkout\": {",
+									"                    \"$id\": \"#/properties/bookingdates/properties/checkout\",",
+									"                    \"type\": \"string\",",
+									"                    \"title\": \"The checkout schema\",",
+									"                    \"description\": \"An explanation about the purpose of this instance.\",",
+									"                    \"default\": \"\",",
+									"                    \"examples\": [",
+									"                        \"2019-01-01\"",
+									"                    ]",
+									"                }",
+									"            },",
+									"            \"additionalProperties\": true",
+									"        },",
+									"        \"additionalneeds\": {",
+									"            \"$id\": \"#/properties/additionalneeds\",",
+									"            \"type\": \"string\",",
+									"            \"title\": \"The additionalneeds schema\",",
+									"            \"description\": \"An explanation about the purpose of this instance.\",",
+									"            \"default\": \"\",",
+									"            \"examples\": [",
+									"                \"Breakfast\"",
+									"            ]",
+									"        }",
+									"    },",
+									"    \"additionalProperties\": true",
+									"}",
+									"",
+									"pm.test(\"Validate Json schema for Existing ID, Schema is valid \",()=>{",
+									"    pm.response.to.have.jsonSchema(existingidSchema)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}/booking/{{booking_id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"booking",
+								"{{booking_id}}"
+							]
+						},
+						"description": "In this, we can extract details of particular booking using an ID. It will display booking details in array form"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Modify Booking",
+			"item": [
+				{
+					"name": "Validupdate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"var updateidSchema = {",
+									"    \"$schema\": \"http://json-schema.org/draft-07/schema\",",
+									"    \"$id\": \"http://localhost:3001\",",
+									"    \"type\": \"object\",",
+									"    \"title\": \"The root schema\",",
+									"    \"description\": \"The root schema comprises the entire JSON document.\",",
+									"    \"default\": {},",
+									"    \"examples\": [",
+									"        {",
+									"            \"firstname\": \"Manpreet\",",
+									"            \"lastname\": \"Singh\",",
+									"            \"totalprice\": 111,",
+									"            \"depositpaid\": true,",
+									"            \"bookingdates\": {",
+									"                \"checkin\": \"2018-01-01\",",
+									"                \"checkout\": \"2019-01-01\"",
+									"            },",
+									"            \"additionalneeds\": \"Breakfast\"",
+									"        }",
+									"    ],",
+									"    \"required\": [",
+									"        \"firstname\",",
+									"        \"lastname\",",
+									"        \"totalprice\",",
+									"        \"depositpaid\",",
+									"        \"bookingdates\",",
+									"        \"additionalneeds\"",
+									"    ],",
+									"    \"properties\": {",
+									"        \"firstname\": {",
+									"            \"$id\": \"#/properties/firstname\",",
+									"            \"type\": \"string\",",
+									"            \"title\": \"The firstname schema\",",
+									"            \"description\": \"An explanation about the purpose of this instance.\",",
+									"            \"default\": \"\",",
+									"            \"examples\": [",
+									"                \"Manpreet\"",
+									"            ]",
+									"        },",
+									"        \"lastname\": {",
+									"            \"$id\": \"#/properties/lastname\",",
+									"            \"type\": \"string\",",
+									"            \"title\": \"The lastname schema\",",
+									"            \"description\": \"An explanation about the purpose of this instance.\",",
+									"            \"default\": \"\",",
+									"            \"examples\": [",
+									"                \"Singh\"",
+									"            ]",
+									"        },",
+									"        \"totalprice\": {",
+									"            \"$id\": \"#/properties/totalprice\",",
+									"            \"type\": \"integer\",",
+									"            \"title\": \"The totalprice schema\",",
+									"            \"description\": \"An explanation about the purpose of this instance.\",",
+									"            \"default\": 0,",
+									"            \"examples\": [",
+									"                111",
+									"            ]",
+									"        },",
+									"        \"depositpaid\": {",
+									"            \"$id\": \"#/properties/depositpaid\",",
+									"            \"type\": \"boolean\",",
+									"            \"title\": \"The depositpaid schema\",",
+									"            \"description\": \"An explanation about the purpose of this instance.\",",
+									"            \"default\": false,",
+									"            \"examples\": [",
+									"                true",
+									"            ]",
+									"        },",
+									"        \"bookingdates\": {",
+									"            \"$id\": \"#/properties/bookingdates\",",
+									"            \"type\": \"object\",",
+									"            \"title\": \"The bookingdates schema\",",
+									"            \"description\": \"An explanation about the purpose of this instance.\",",
+									"            \"default\": {},",
+									"            \"examples\": [",
+									"                {",
+									"                    \"checkin\": \"2018-01-01\",",
+									"                    \"checkout\": \"2019-01-01\"",
+									"                }",
+									"            ],",
+									"            \"required\": [",
+									"                \"checkin\",",
+									"                \"checkout\"",
+									"            ],",
+									"            \"properties\": {",
+									"                \"checkin\": {",
+									"                    \"$id\": \"#/properties/bookingdates/properties/checkin\",",
+									"                    \"type\": \"string\",",
+									"                    \"title\": \"The checkin schema\",",
+									"                    \"description\": \"An explanation about the purpose of this instance.\",",
+									"                    \"default\": \"\",",
+									"                    \"examples\": [",
+									"                        \"2018-01-01\"",
+									"                    ]",
+									"                },",
+									"                \"checkout\": {",
+									"                    \"$id\": \"#/properties/bookingdates/properties/checkout\",",
+									"                    \"type\": \"string\",",
+									"                    \"title\": \"The checkout schema\",",
+									"                    \"description\": \"An explanation about the purpose of this instance.\",",
+									"                    \"default\": \"\",",
+									"                    \"examples\": [",
+									"                        \"2019-01-01\"",
+									"                    ]",
+									"                }",
+									"            },",
+									"            \"additionalProperties\": true",
+									"        },",
+									"        \"additionalneeds\": {",
+									"            \"$id\": \"#/properties/additionalneeds\",",
+									"            \"type\": \"string\",",
+									"            \"title\": \"The additionalneeds schema\",",
+									"            \"description\": \"An explanation about the purpose of this instance.\",",
+									"            \"default\": \"\",",
+									"            \"examples\": [",
+									"                \"Breakfast\"",
+									"            ]",
+									"        }",
+									"    },",
+									"    \"additionalProperties\": true",
+									"}",
+									"",
+									"pm.test(\"Validate Json schema for Update ID, Schema is valid \",()=>{",
+									"    pm.response.to.have.jsonSchema(updateidSchema)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "password123",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Cookie",
+								"value": "token=e313e2b214c3ef1",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstname\" : \"test\",\n    \"lastname\" : \"Brown\",\n    \"totalprice\" : 111,\n    \"depositpaid\" : true,\n    \"bookingdates\" : {\n        \"checkin\" : \"2018-01-01\",\n        \"checkout\" : \"2019-01-01\"\n    },\n    \"additionalneeds\" : \"Breakfast\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/booking/{{booking_id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"booking",
+								"{{booking_id}}"
+							]
+						},
+						"description": "This will update the booking details"
+					},
+					"response": []
+				},
+				{
+					"name": "Patch Update Booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"let patchupdateSchema = {",
+									"    \"$schema\": \"http://json-schema.org/draft-07/schema\",",
+									"    \"$id\": \"http://localhost:3001\",",
+									"    \"type\": \"object\",",
+									"    \"title\": \"The root schema\",",
+									"    \"description\": \"The root schema comprises the entire JSON document.\",",
+									"    \"default\": {},",
+									"    \"examples\": [",
+									"        {",
+									"            \"firstname\": \"Manpreet\",",
+									"            \"lastname\": \"Singh\",",
+									"            \"totalprice\": 111,",
+									"            \"depositpaid\": true,",
+									"            \"bookingdates\": {",
+									"                \"checkin\": \"2018-01-01\",",
+									"                \"checkout\": \"2019-01-01\"",
+									"            },",
+									"            \"additionalneeds\": \"Breakfast\"",
+									"        }",
+									"    ],",
+									"    \"required\": [",
+									"        \"firstname\",",
+									"        \"lastname\",",
+									"        \"totalprice\",",
+									"        \"depositpaid\",",
+									"        \"bookingdates\",",
+									"        \"additionalneeds\"",
+									"    ],",
+									"    \"properties\": {",
+									"        \"firstname\": {",
+									"            \"$id\": \"#/properties/firstname\",",
+									"            \"type\": \"string\",",
+									"            \"title\": \"The firstname schema\",",
+									"            \"description\": \"An explanation about the purpose of this instance.\",",
+									"            \"default\": \"\",",
+									"            \"examples\": [",
+									"                \"Manpreet\"",
+									"            ]",
+									"        },",
+									"        \"lastname\": {",
+									"            \"$id\": \"#/properties/lastname\",",
+									"            \"type\": \"string\",",
+									"            \"title\": \"The lastname schema\",",
+									"            \"description\": \"An explanation about the purpose of this instance.\",",
+									"            \"default\": \"\",",
+									"            \"examples\": [",
+									"                \"Singh\"",
+									"            ]",
+									"        },",
+									"        \"totalprice\": {",
+									"            \"$id\": \"#/properties/totalprice\",",
+									"            \"type\": \"integer\",",
+									"            \"title\": \"The totalprice schema\",",
+									"            \"description\": \"An explanation about the purpose of this instance.\",",
+									"            \"default\": 0,",
+									"            \"examples\": [",
+									"                111",
+									"            ]",
+									"        },",
+									"        \"depositpaid\": {",
+									"            \"$id\": \"#/properties/depositpaid\",",
+									"            \"type\": \"boolean\",",
+									"            \"title\": \"The depositpaid schema\",",
+									"            \"description\": \"An explanation about the purpose of this instance.\",",
+									"            \"default\": false,",
+									"            \"examples\": [",
+									"                true",
+									"            ]",
+									"        },",
+									"        \"bookingdates\": {",
+									"            \"$id\": \"#/properties/bookingdates\",",
+									"            \"type\": \"object\",",
+									"            \"title\": \"The bookingdates schema\",",
+									"            \"description\": \"An explanation about the purpose of this instance.\",",
+									"            \"default\": {},",
+									"            \"examples\": [",
+									"                {",
+									"                    \"checkin\": \"2018-01-01\",",
+									"                    \"checkout\": \"2019-01-01\"",
+									"                }",
+									"            ],",
+									"            \"required\": [",
+									"                \"checkin\",",
+									"                \"checkout\"",
+									"            ],",
+									"            \"properties\": {",
+									"                \"checkin\": {",
+									"                    \"$id\": \"#/properties/bookingdates/properties/checkin\",",
+									"                    \"type\": \"string\",",
+									"                    \"title\": \"The checkin schema\",",
+									"                    \"description\": \"An explanation about the purpose of this instance.\",",
+									"                    \"default\": \"\",",
+									"                    \"examples\": [",
+									"                        \"2018-01-01\"",
+									"                    ]",
+									"                },",
+									"                \"checkout\": {",
+									"                    \"$id\": \"#/properties/bookingdates/properties/checkout\",",
+									"                    \"type\": \"string\",",
+									"                    \"title\": \"The checkout schema\",",
+									"                    \"description\": \"An explanation about the purpose of this instance.\",",
+									"                    \"default\": \"\",",
+									"                    \"examples\": [",
+									"                        \"2019-01-01\"",
+									"                    ]",
+									"                }",
+									"            },",
+									"            \"additionalProperties\": true",
+									"        },",
+									"        \"additionalneeds\": {",
+									"            \"$id\": \"#/properties/additionalneeds\",",
+									"            \"type\": \"string\",",
+									"            \"title\": \"The additionalneeds schema\",",
+									"            \"description\": \"An explanation about the purpose of this instance.\",",
+									"            \"default\": \"\",",
+									"            \"examples\": [",
+									"                \"Breakfast\"",
+									"            ]",
+									"        }",
+									"    },",
+									"    \"additionalProperties\": true",
+									"}",
+									"",
+									"pm.test(\"Validate Json schema for Patch Update, Schema is valid \",()=>{",
+									"    pm.response.to.have.jsonSchema(patchupdateSchema)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Cookie",
+								"value": "token=361e5fb7f2015bd",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstname\" : \"Manpreet\",\n    \"lastname\" : \"Brown\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/booking/{{booking_id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"booking",
+								"{{booking_id}}"
+							]
+						},
+						"description": "This will partially update the booking details"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "DeleteBooking",
+			"item": [
+				{
+					"name": "Delete Booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "password123",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Cookie",
+								"value": "token=e313e2b214c3ef1",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/booking/{{booking_id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"booking",
+								"{{booking_id}}"
+							]
+						},
+						"description": "This will delete booking using an ID"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "HealthStatus",
+			"item": [
+				{
+					"name": "Ping",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/ping",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"ping"
+							]
+						},
+						"description": "It will check the health status of the report"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "password123",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "admin",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
